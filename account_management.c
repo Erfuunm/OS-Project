@@ -75,7 +75,7 @@ void log_transaction(const char *operation, double amount, int from_account_id, 
     pthread_mutex_unlock(&file_lock);
 }
 
-// Function to create an account
+
 void create_account(double initial_balance) {
     if (account_count < MAX_ACCOUNTS) {
         pthread_mutex_lock(&accounts[account_count].lock);
