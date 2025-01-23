@@ -9,19 +9,19 @@
 #define ACCOUNT_FILE "accounts.txt"
 #define TRANSACTION_LOG_FILE "transaction_log.txt"
 
-// Account structure
+
 typedef struct {
     int id;
     double balance;
     pthread_mutex_t lock;          
 } Account;
 
-// Global accounts array
+
 Account accounts[MAX_ACCOUNTS];
 int account_count = 0;
 pthread_mutex_t file_lock; 
 
-// Function to get current time as a string
+
 const char *get_current_time() {
     static char buffer[20];
     time_t now = time(NULL);
