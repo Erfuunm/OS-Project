@@ -9,7 +9,6 @@
 #define ACCOUNT_FILE "accounts.txt"
 #define TRANSACTION_LOG_FILE "transaction_log.txt"
 
-// Account structure
 typedef struct {
     int id;
     double balance;
@@ -44,7 +43,6 @@ void load_accounts() {
     fclose(file);
 }
 
-
 void save_accounts() {
     pthread_mutex_lock(&file_lock);
     FILE *file = fopen(ACCOUNT_FILE, "w");
@@ -61,7 +59,7 @@ void save_accounts() {
     pthread_mutex_unlock(&file_lock);
 }
 
-// Function to log a transaction to a log file
+
 void log_transaction(const char *operation, double amount, int from_account_id, int to_account_id, const char *status) {
     pthread_mutex_lock(&file_lock);
     FILE *log_file = fopen(TRANSACTION_LOG_FILE, "a");
