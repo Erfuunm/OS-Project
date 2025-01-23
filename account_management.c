@@ -13,13 +13,13 @@
 typedef struct {
     int id;
     double balance;
-    pthread_mutex_t lock;          // Mutex for the account
+    pthread_mutex_t lock;          
 } Account;
 
 // Global accounts array
 Account accounts[MAX_ACCOUNTS];
 int account_count = 0;
-pthread_mutex_t file_lock; // Mutex for file access
+pthread_mutex_t file_lock; 
 
 // Function to get current time as a string
 const char *get_current_time() {
@@ -30,7 +30,7 @@ const char *get_current_time() {
     return buffer;
 }
 
-// Function to load accounts from file
+
 void load_accounts() {
     FILE *file = fopen(ACCOUNT_FILE, "r");
     if (file == NULL) {
