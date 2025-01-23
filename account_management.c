@@ -9,19 +9,17 @@
 #define ACCOUNT_FILE "accounts.txt"
 #define TRANSACTION_LOG_FILE "transaction_log.txt"
 
-// Account structure
 typedef struct {
     int id;
     double balance;
     pthread_mutex_t lock;          
 } Account;
 
-// Global accounts array
 Account accounts[MAX_ACCOUNTS];
 int account_count = 0;
 pthread_mutex_t file_lock; 
 
-// Function to get current time as a string
+
 const char *get_current_time() {
     static char buffer[20];
     time_t now = time(NULL);
@@ -45,7 +43,6 @@ void load_accounts() {
     fclose(file);
 }
 
-// Function to save accounts to file
 void save_accounts() {
     pthread_mutex_lock(&file_lock);
     FILE *file = fopen(ACCOUNT_FILE, "w");
@@ -62,7 +59,7 @@ void save_accounts() {
     pthread_mutex_unlock(&file_lock);
 }
 
-// Function to log a transaction to a log file
+
 void log_transaction(const char *operation, double amount, int from_account_id, int to_account_id, const char *status) {
     pthread_mutex_lock(&file_lock);
     FILE *log_file = fopen(TRANSACTION_LOG_FILE, "a");
@@ -78,7 +75,7 @@ void log_transaction(const char *operation, double amount, int from_account_id, 
     pthread_mutex_unlock(&file_lock);
 }
 
-// Function to create an account
+
 void create_account(double initial_balance) {
     if (account_count < MAX_ACCOUNTS) {
         pthread_mutex_lock(&accounts[account_count].lock);
