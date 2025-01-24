@@ -45,7 +45,7 @@ void load_accounts() {
     fclose(file);
 }
 
-// Function to save accounts to file
+
 void save_accounts() {
     pthread_mutex_lock(&file_lock);
     FILE *file = fopen(ACCOUNT_FILE, "w");
@@ -62,7 +62,7 @@ void save_accounts() {
     pthread_mutex_unlock(&file_lock);
 }
 
-// Function to log a transaction to a log file
+
 void log_transaction(const char *operation, double amount, int from_account_id, int to_account_id, const char *status) {
     pthread_mutex_lock(&file_lock);
     FILE *log_file = fopen(TRANSACTION_LOG_FILE, "a");
@@ -78,7 +78,7 @@ void log_transaction(const char *operation, double amount, int from_account_id, 
     pthread_mutex_unlock(&file_lock);
 }
 
-// Function to create an account
+
 void create_account(double initial_balance) {
     if (account_count < MAX_ACCOUNTS) {
         pthread_mutex_lock(&accounts[account_count].lock);
@@ -93,13 +93,13 @@ void create_account(double initial_balance) {
         log_transaction("Create Account", initial_balance, new_account.id, -1, "Successful");
 
         printf("Account created: ID = %d, Balance = %.2f\n", new_account.id, new_account.balance);
-        save_accounts(); // Save to file
+        save_accounts(); 
     } else {
         printf("Maximum account limit reached!\n");
     }
 }
 
-// Function to deposit
+
 void deposit(int account_id, double amount) {
     pthread_mutex_lock(&accounts[account_id].lock);
     accounts[account_id].balance += amount;
@@ -108,10 +108,10 @@ void deposit(int account_id, double amount) {
     log_transaction("Deposit", amount, account_id, -1, "Successful");
 
     printf("Deposited: %.2f to Account ID = %d\n", amount, account_id);
-    save_accounts(); // Save to file
+    save_accounts(); 
 }
 
-// Function to withdraw
+
 void withdraw(int account_id, double amount) {
     pthread_mutex_lock(&accounts[account_id].lock);
     if (accounts[account_id].balance >= amount) {
@@ -126,10 +126,10 @@ void withdraw(int account_id, double amount) {
         log_transaction("Withdraw", amount, account_id, -1, "Failed: Insufficient balance");
         printf("Insufficient balance in Account ID = %d\n", account_id);
     }
-    save_accounts(); // Save to file
+    save_accounts(); 
 }
 
-// Function to transfer funds
+
 void transfer_funds(int from_account_id, int to_account_id, double amount) {
     if (from_account_id < to_account_id) {
         pthread_mutex_lock(&accounts[from_account_id].lock);
@@ -139,9 +139,7 @@ void transfer_funds(int from_account_id, int to_account_id, double amount) {
         pthread_mutex_lock(&accounts[from_account_id].lock);
     }
 
-    // Start atomic transaction
     if (accounts[from_account_id].balance >= amount) {
-        // Perform transaction
         accounts[from_account_id].balance -= amount;
         accounts[to_account_id].balance += amount;
 
@@ -149,17 +147,16 @@ void transfer_funds(int from_account_id, int to_account_id, double amount) {
 
         printf("Transferred: %.2f from Account ID = %d to Account ID = %d\n", amount, from_account_id, to_account_id);
     } else {
-        // Rollback
         log_transaction("Transfer", amount, from_account_id, to_account_id, "Failed: Insufficient balance");
         printf("Insufficient balance in Account ID = %d\n", from_account_id);
     }
 
     pthread_mutex_unlock(&accounts[to_account_id].lock);
     pthread_mutex_unlock(&accounts[from_account_id].lock);
-    save_accounts(); // Save to file
+    save_accounts(); 
 }
 
-// Function to display transaction history
+
 void display_transaction_history() {
     char line[256];
     FILE *log_file = fopen(TRANSACTION_LOG_FILE, "r");
@@ -175,7 +172,6 @@ void display_transaction_history() {
     fclose(log_file);
 }
 
-// User interface
 void user_interface() {
     int choice, account_id, to_account_id;
     double amount;
@@ -221,7 +217,7 @@ void user_interface() {
                 display_transaction_history();
                 break;
             case 7:
-                save_accounts(); // Save on exit
+                save_accounts();
                 exit(0);
             default:
                 printf("Invalid choice! Please try again.\n");
@@ -229,7 +225,7 @@ void user_interface() {
     }
 }
 
-// Main function
+
 int main() {
     pthread_mutex_init(&file_lock, NULL); // Initialize the file mutex lock
     load_accounts(); // Load existing accounts from file
