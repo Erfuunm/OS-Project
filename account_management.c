@@ -17,6 +17,19 @@ typedef struct {
 } Account;
 
 
+typedef struct {
+    int from_account_id;
+    int to_account_id;
+    double amount;
+} TransferData;
+
+
+typedef struct {
+    int account_id;
+    double amount;
+} WithdrawData;
+
+
 Account accounts[MAX_ACCOUNTS];
 int account_count = 0;
 pthread_mutex_t file_lock; 
@@ -226,9 +239,54 @@ void user_interface() {
 }
 
 
+void *transfer_thread(void *arg) {
+    TransferData *data = (TransferData *)arg;
+    transfer_funds(data->from_account_id, data->to_account_id, data->amount);
+    return NULL;
+}
+
+
+void *withdraw_thread(void *arg) {
+    WithdrawData *data = (WithdrawData *)arg;
+    withdraw(data->account_id, data->amount);
+    return NULL;
+}
+
+void test_case() {
+    
+    create_account(2000.0); 
+    create_account(1000.0); 
+
+    printf("Initial setup complete: Account 0 = 2000, Account 1 = 1000\n");
+
+    
+    TransferData transfer1 = {0, 1, 200.0};
+    TransferData transfer2 = {0, 1, 200.0};
+    WithdrawData withdraw1 = {1, 500.0};
+
+    
+    pthread_t thread1, thread2, thread3;
+
+    pthread_create(&thread1, NULL, transfer_thread, &transfer1);
+    pthread_create(&thread2, NULL, transfer_thread, &transfer2);
+    pthread_create(&thread3, NULL, withdraw_thread, &withdraw1);
+
+
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+    pthread_join(thread3, NULL);
+
+    printf("Test case complete.\n");
+    display_transaction_history();
+}
+
+
+
+
 int main() {
-    pthread_mutex_init(&file_lock, NULL); // Initialize the file mutex lock
-    load_accounts(); // Load existing accounts from file
-    user_interface();
+    // pthread_mutex_init(&file_lock, NULL);
+    // load_accounts();
+    // user_interface();
+    test_case();
     return 0;
 }
